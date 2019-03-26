@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize("confluo-api", "postgres", "", {
   dialect: "postgres",
-  logging: true
+  logging: false
 });
 
 const models = {
