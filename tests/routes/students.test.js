@@ -359,7 +359,7 @@ beforeAll(async () => {
 afterAll(async () => await sequelize.close());
 
 describe("students", () => {
-  describe("GET routes", () => {
+  describe("[GET] routes", () => {
     const verifyStudents = (res, expected) => {
       const students = res.body;
       students.forEach((student, index) => {
@@ -368,6 +368,7 @@ describe("students", () => {
         expect(student.lastName).toEqual(expected[index].lastName);
       });
     };
+
     it("should get all students", () => {
       return request(app)
         .get(route())
@@ -375,9 +376,32 @@ describe("students", () => {
         .expect(200)
         .then(res => verifyStudents(res, expectedStudents));
     });
-  });
 
-  describe("POST routes", () => {
-    it("should post a book when token is provided", () => {});
+    it("should get a student of that ID", () => {
+      const id = 3;
+      return request(app)
+        .get(route(id))
+        .expect("Content-Type", /json/)
+        .expect(200)
+        .then(res => {
+          expect(res.body.lastName).toEqual(
+            expectedStudents[res.body.id - 1].lastName
+          );
+        });
+    });
+
+    it("should fail as there is no student with that ID", () => {
+      const id = "100";
+      return request(app)
+        .get(route(id))
+        .expect(404);
+    });
+
+    it("should fail as string IDs are invalid", () => {
+      const id = "invalid-id";
+      return request(app)
+        .get(route(id))
+        .expect(400);
+    });
   });
 });
