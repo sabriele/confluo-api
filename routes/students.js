@@ -75,6 +75,22 @@ router
     } catch (error) {
       return res.sendStatus(500);
     }
+  })
+  .delete(async (req, res) => {
+    const id = req.params.id;
+    if (isNaN(Number(id)))
+      return res.status(400).end(`Invalid input syntax for integer: "${id}" `);
+
+    try {
+      const deletedStudent = await Student.destroy({ where: { id } });
+      if (!deletedStudent)
+        return res.status(404).end("This student does not exist");
+      return res
+        .status(202)
+        .json(`Number of students deleted: ${deletedStudent}`);
+    } catch (error) {
+      return res.sendStatus(500);
+    }
   });
 
 module.exports = router;

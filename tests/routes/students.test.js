@@ -1,6 +1,6 @@
 const request = require("supertest");
 const app = require("../../app");
-const { sequelize } = require("../../models");
+const { Student, sequelize } = require("../../models");
 const getStudents = require("../../seed");
 
 const expectedStudents = [
@@ -492,6 +492,32 @@ describe("students", () => {
           firstName: "Loren",
           lastName: "Stewart"
         })
+        .expect(400);
+    });
+  });
+
+  describe("[DELETE] routes", () => {
+    it("should successfully remove a student", async () => {
+      const id = "1";
+      await request(app)
+        .delete(route(id))
+        .expect(202);
+
+      const student = await Student.findOne({ where: { id } });
+      expect(student).toBe(null);
+    });
+
+    it("should fail as there is no student with that ID", () => {
+      const id = "100";
+      return request(app)
+        .delete(route(id))
+        .expect(404);
+    });
+
+    it("should fail as string IDs are invalid", () => {
+      const id = "invalid-id";
+      return request(app)
+        .delete(route(id))
         .expect(400);
     });
   });
