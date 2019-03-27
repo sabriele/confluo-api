@@ -453,4 +453,46 @@ describe("students", () => {
         });
     });
   });
+
+  describe("[PATCH] routes", () => {
+    it("should update the edited fields only", () => {
+      const id = "2";
+      return request(app)
+        .patch(route(id))
+        .send({
+          firstName: "Loren",
+          lastName: "Stewart"
+        })
+        .expect(201)
+        .then(res => {
+          const student = res.body;
+          expect(student.id).toEqual(2);
+          expect(student.firstName).toEqual("Loren");
+          expect(student.lastName).toEqual("Stewart");
+          expect(student.email).toEqual("ly51vi37zppqb7iuy968@gmail.com");
+        });
+    });
+
+    it("should fail as there is no student with that ID", () => {
+      const id = "100";
+      return request(app)
+        .patch(route(id))
+        .send({
+          firstName: "Loren",
+          lastName: "Stewart"
+        })
+        .expect(404);
+    });
+
+    it("should fail as string IDs are invalid", () => {
+      const id = "invalid-id";
+      return request(app)
+        .patch(route(id))
+        .send({
+          firstName: "Loren",
+          lastName: "Stewart"
+        })
+        .expect(400);
+    });
+  });
 });

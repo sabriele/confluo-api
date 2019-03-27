@@ -46,19 +46,35 @@ router
     }
   });
 
-router.route("/:id").get(async (req, res) => {
-  const { id } = req.params;
-  if (isNaN(Number(id)))
-    return res.status(400).end(`Invalid input syntax for integer: "${id}" `);
+router
+  .route("/:id")
+  .get(async (req, res) => {
+    const { id } = req.params;
+    if (isNaN(Number(id)))
+      return res.status(400).end(`Invalid input syntax for integer: "${id}" `);
 
-  try {
-    const foundStudent = await Student.findOne({ where: { id } });
-    if (!foundStudent)
-      return res.status(404).end("This student does not exist");
-    return res.status(200).json(foundStudent);
-  } catch (error) {
-    return res.sendStatus(500);
-  }
-});
+    try {
+      const foundStudent = await Student.findOne({ where: { id } });
+      if (!foundStudent)
+        return res.status(404).end("This student does not exist");
+      return res.status(200).json(foundStudent);
+    } catch (error) {
+      return res.sendStatus(500);
+    }
+  })
+  .patch(async (req, res) => {
+    const { id } = req.params;
+    if (isNaN(Number(id)))
+      return res.status(400).end(`Invalid input syntax for integer: "${id}" `);
+
+    try {
+      const student = await Student.findOne({ where: { id } });
+      if (!student) return res.status(404).end("This student does not exist");
+      const updatedStudent = await student.update(req.body);
+      return res.status(201).json(updatedStudent);
+    } catch (error) {
+      return res.sendStatus(500);
+    }
+  });
 
 module.exports = router;
