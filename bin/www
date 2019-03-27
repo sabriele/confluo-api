@@ -89,6 +89,10 @@ function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
-  console.log(`App is now running on http://localhost:${port}`);
+  if (process.env.NODE_ENV === "production") {
+    console.log(`Server is running on Heroku with port number ${port}`);
+  } else {
+    console.log(`App is now running on http://localhost:${port}`);
+  }
   console.log(`-------------------------------------------`);
 }

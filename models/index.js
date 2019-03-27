@@ -1,8 +1,17 @@
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("confluo-api", "postgres", "", {
-  dialect: "postgres",
-  logging: false
-});
+const env = process.env.NODE_ENV || "development";
+const config = require(__dirname + "/../bin/config.js")[env];
+let sequelize;
+
+if (env === "production") sequelize = new Sequelize(config.url, config.options);
+else {
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config.options
+  );
+}
 
 const models = {
   Student: sequelize.import("./Student"),
