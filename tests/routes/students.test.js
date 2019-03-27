@@ -404,4 +404,53 @@ describe("students", () => {
         .expect(400);
     });
   });
+
+  describe("[POST] routes", () => {
+    const newStudent = {
+      email: "t364ahrj2udgq9h2v434@gmail.com",
+      firstName: "Luke",
+      lastName: "Govindasamy",
+      imageUrl: "/students/luke_govindasamy.jpg",
+      level: {
+        type: "Primary",
+        year: 6
+      },
+      subjects: ["Science", "Mathematics"],
+      address: "2 MacPherson Lane",
+      schedules: [
+        {
+          day: "Tuesday",
+          time: "Fri Mar 08 2019 19:00:00 GMT+0800 (Singapore Standard Time)",
+          duration: 1
+        },
+        {
+          day: "Friday",
+          time: "Fri Mar 08 2019 19:00:00 GMT+0800 (Singapore Standard Time)",
+          duration: 1
+        }
+      ],
+      rates: 45,
+      active: true,
+      startDate: "2018-10-13",
+      referrer: "",
+      notes: ""
+    };
+
+    it("should create a new student (when token is provided)", () => {
+      return request(app)
+        .post(route())
+        .send(newStudent)
+        .set("Content-Type", "application/json")
+        .expect(201)
+        .then(res => {
+          expect(res.body).toEqual(expect.any(Object));
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              firstName: "Luke",
+              lastName: "Govindasamy"
+            })
+          );
+        });
+    });
+  });
 });
