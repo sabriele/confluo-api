@@ -251,7 +251,7 @@ const getStudents = async () => {
 
 const getUsers = async () => {
   await User.create({
-    email: "sabriele@gmail.com",
+    email: "sab@example.com",
     password: "727",
     firstName: "",
     lastName: "",

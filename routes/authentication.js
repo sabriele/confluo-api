@@ -1,5 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 const { User } = require("../models");
 
 const router = express.Router();
@@ -34,16 +36,21 @@ router.route("/register").post(async (req, res, next) => {
 
 router.route("/login").post(async (req, res, next) => {
   try {
-    const existingUser = await doesUserExist(req.body.email);
+    const { email, password } = req.body;
+
+    const existingUser = await doesUserExist(email);
     if (!existingUser)
       return res
         .status(400)
         .json({ error: { message: "User does not exist" } });
 
+    const match = await bcrypt.compare(password, existingUser.password);
+    if (!match) throw new Error("Username or password not found");
+
     const token = await jwt.sign({ id: existingUser.id }, secret);
     res.cookie("token", token, { httpOnly: true });
 
-    return res.status(201).json(existingUser);
+    return res.status(200).json(existingUser);
   } catch (error) {
     return next(error);
   }

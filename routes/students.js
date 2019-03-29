@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+
 const { Student, Schedule, Level, User } = require("../models");
 
 const router = express.Router();
@@ -7,17 +8,15 @@ const router = express.Router();
 const verifyToken = async (req, res, next) => {
   try {
     const secret = "11-herbs-and-spices";
-    console.log(req.cookies);
     const { token } = req.cookies;
     if (!token) return res.status(403).send("Token is not supplied");
 
     const user = await jwt.verify(token, secret);
     const foundUser = await User.findOne({ where: { id: user.id } });
-
     if (!foundUser)
       return res
         .status(403)
-        .json({ error: { message: "No such user exists" } });
+        .json({ error: { message: "User does not exist" } });
 
     return next();
   } catch (error) {

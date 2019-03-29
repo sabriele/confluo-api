@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
@@ -28,6 +30,15 @@ module.exports = (sequelize, DataTypes) => {
       lastName: { type: DataTypes.STRING },
       imageUrl: {
         type: DataTypes.STRING
+      }
+    },
+    {
+      freezeTableName: true,
+      hooks: {
+        beforeCreate: customer => {
+          const salt = bcrypt.genSaltSync(10);
+          customer.password = bcrypt.hashSync(customer.password, salt);
+        }
       }
     },
     { timestamps: true }

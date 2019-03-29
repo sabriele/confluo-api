@@ -360,9 +360,7 @@ beforeAll(async () => {
   await getUsers();
 });
 
-afterEach(async () => {
-  jwt.verify.mockReset();
-});
+afterEach(async () => await jwt.verify.mockReset());
 
 afterAll(async () => await sequelize.close());
 
