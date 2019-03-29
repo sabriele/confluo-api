@@ -1,9 +1,9 @@
-module.exports = (sequelize, type) => {
+module.exports = (sequelize, DataTypes) => {
   const Level = sequelize.define(
     "level",
     {
-      type: type.STRING,
-      year: type.INTEGER
+      type: DataTypes.STRING,
+      year: DataTypes.INTEGER
     },
     { timestamps: false }
   );

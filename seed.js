@@ -1,4 +1,4 @@
-const { Student, Schedule, Level } = require("./models");
+const { Student, Schedule, Level, User } = require("./models");
 
 const getStudents = async () => {
   await Student.create(
@@ -249,4 +249,14 @@ const getStudents = async () => {
   );
 };
 
-module.exports = getStudents;
+const getUsers = async () => {
+  await User.create({
+    email: "sabriele@gmail.com",
+    password: "727",
+    firstName: "",
+    lastName: "",
+    imageUrl: "/image"
+  });
+};
+
+module.exports = { getStudents, getUsers };

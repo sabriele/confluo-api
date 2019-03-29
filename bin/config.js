@@ -11,10 +11,9 @@ module.exports = {
   test: {
     username: "postgres",
     password: "",
-    database: "confluo-api",
+    database: "confluo-api-test",
     options: {
-      dialect: "sqlite",
-      storage: ":memory:",
+      dialect: "postgres",
       logging: false
     }
   },

@@ -1,12 +1,41 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+const { Student, Schedule, Level, User } = require("../models");
+
 const router = express.Router();
-const { Student, Schedule, Level } = require("../models");
+
+const verifyToken = async (req, res, next) => {
+  try {
+    const secret = "11-herbs-and-spices";
+    console.log(req.cookies);
+    const { token } = req.cookies;
+    if (!token) return res.status(403).send("Token is not supplied");
+
+    const user = await jwt.verify(token, secret);
+    const foundUser = await User.findOne({ where: { id: user.id } });
+
+    if (!foundUser)
+      return res
+        .status(403)
+        .json({ error: { message: "No such user exists" } });
+
+    return next();
+  } catch (error) {
+    return res.status(403).json({ error: { message: "Token is not valid" } });
+  }
+};
+
+router.use("/", verifyToken);
 
 router
   .route("/")
   .get(async (req, res) => {
-    const students = await Student.findAll({ include: [Schedule, Level] });
-    return res.status(200).json(students);
+    try {
+      const students = await Student.findAll({ include: [Schedule, Level] });
+      return res.status(200).json(students);
+    } catch (error) {
+      return res.sendStatus(404);
+    }
   })
   .post(async (req, res) => {
     const getSchedules = () => {

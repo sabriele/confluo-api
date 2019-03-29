@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../../app");
 const { Student, sequelize } = require("../../models");
-const getStudents = require("../../seed");
+const { getStudents, getUsers } = require("../../seed");
 
 const expectedStudents = [
   {
@@ -351,9 +351,17 @@ const route = (params = "") => {
   return `${path}/${params}`;
 };
 
+jest.mock("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+
 beforeAll(async () => {
   await sequelize.sync({ force: true });
   await getStudents();
+  await getUsers();
+});
+
+afterEach(async () => {
+  jwt.verify.mockReset();
 });
 
 afterAll(async () => await sequelize.close());
@@ -369,18 +377,41 @@ describe("students", () => {
       });
     };
 
-    it("should get all students", () => {
+    it("should forbid access for no authorization", async () => {
+      jwt.verify.mockRejectedValueOnce({ id: 100 });
+
+      await request(app)
+        .get(route())
+        .expect(403);
+    });
+
+    it("should deny access with incorrect authorization token", async () => {
+      jwt.verify.mockRejectedValueOnce({ id: 100 });
+
+      await request(app)
+        .get(route())
+        .set("Cookie", "token=12345")
+        .expect(403);
+    });
+
+    it("should grant access and get all students with authorization", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       return request(app)
         .get(route())
+        .set("Cookie", "token=727")
         .expect("Content-Type", /json/)
         .expect(200)
         .then(res => verifyStudents(res, expectedStudents));
     });
 
     it("should get a student of that ID", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = 3;
       return request(app)
         .get(route(id))
+        .set("Cookie", "token=727")
         .expect("Content-Type", /json/)
         .expect(200)
         .then(res => {
@@ -391,16 +422,22 @@ describe("students", () => {
     });
 
     it("should fail as there is no student with that ID", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "100";
       return request(app)
         .get(route(id))
+        .set("Cookie", "token=727")
         .expect(404);
     });
 
     it("should fail as string IDs are invalid", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "invalid-id";
       return request(app)
         .get(route(id))
+        .set("Cookie", "token=727")
         .expect(400);
     });
   });
@@ -437,10 +474,13 @@ describe("students", () => {
     };
 
     it("should create a new student (when token is provided)", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       return request(app)
         .post(route())
-        .send(newStudent)
+        .set("Cookie", "token=727")
         .set("Content-Type", "application/json")
+        .send(newStudent)
         .expect(201)
         .then(res => {
           expect(res.body).toEqual(expect.any(Object));
@@ -456,9 +496,12 @@ describe("students", () => {
 
   describe("[PATCH] routes", () => {
     it("should update the edited fields only", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "2";
       return request(app)
         .patch(route(id))
+        .set("Cookie", "token=727")
         .send({
           firstName: "Loren",
           lastName: "Stewart"
@@ -474,9 +517,12 @@ describe("students", () => {
     });
 
     it("should fail as there is no student with that ID", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "100";
       return request(app)
         .patch(route(id))
+        .set("Cookie", "token=727")
         .send({
           firstName: "Loren",
           lastName: "Stewart"
@@ -485,9 +531,12 @@ describe("students", () => {
     });
 
     it("should fail as string IDs are invalid", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "invalid-id";
       return request(app)
         .patch(route(id))
+        .set("Cookie", "token=727")
         .send({
           firstName: "Loren",
           lastName: "Stewart"
@@ -498,9 +547,12 @@ describe("students", () => {
 
   describe("[DELETE] routes", () => {
     it("should successfully remove a student", async () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "1";
       await request(app)
         .delete(route(id))
+        .set("Cookie", "token=727")
         .expect(202);
 
       const student = await Student.findOne({ where: { id } });
@@ -508,16 +560,22 @@ describe("students", () => {
     });
 
     it("should fail as there is no student with that ID", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "100";
       return request(app)
         .delete(route(id))
+        .set("Cookie", "token=727")
         .expect(404);
     });
 
     it("should fail as string IDs are invalid", () => {
+      jwt.verify.mockResolvedValueOnce({ id: 1 });
+
       const id = "invalid-id";
       return request(app)
         .delete(route(id))
+        .set("Cookie", "token=727")
         .expect(400);
     });
   });

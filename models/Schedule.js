@@ -1,15 +1,15 @@
-module.exports = (sequelize, type) => {
+module.exports = (sequelize, DataTypes) => {
   const Schedule = sequelize.define(
     "schedule",
     {
       id: {
-        type: type.INTEGER,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      day: type.STRING,
-      time: type.STRING,
-      duration: type.FLOAT
+      day: DataTypes.STRING,
+      time: DataTypes.STRING,
+      duration: DataTypes.FLOAT
     },
     { timestamps: true }
   );

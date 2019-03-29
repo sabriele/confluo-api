@@ -27,5 +27,6 @@ Object.keys(models).forEach(key => {
 
 module.exports = {
   sequelize,
-  ...models
+  ...models,
+  User: sequelize.import("./User")
 };

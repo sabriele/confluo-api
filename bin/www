@@ -10,7 +10,7 @@ const debug = require("debug")("confluo-api:server");
 const http = require("http");
 
 const { sequelize } = require("../models");
-const getStudents = require("../seed");
+const { getStudents, getUsers } = require("../seed");
 
 /**
  * Get port from environment and store in Express.
@@ -30,6 +30,7 @@ const server = http.createServer(app);
  */
 sequelize.sync({ force: true }).then(() => {
   getStudents();
+  getUsers();
   server.listen(port);
   server.on("error", onError);
   server.on("listening", onListening);
