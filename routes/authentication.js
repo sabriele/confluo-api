@@ -45,7 +45,10 @@ router.route("/login").post(async (req, res, next) => {
         .json({ error: { message: "User does not exist" } });
 
     const match = await bcrypt.compare(password, existingUser.password);
-    if (!match) throw new Error("Username or password not found");
+    if (!match)
+      return res
+        .status(400)
+        .json({ error: { message: "Username or password not found" } });
 
     const token = await jwt.sign({ id: existingUser.id }, secret);
     res.cookie("token", token, { httpOnly: true });

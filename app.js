@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -10,16 +11,40 @@ const authRouter = require("./routes/authentication");
 
 const app = express();
 
+const isDev = process.env.NODE_ENV !== "production";
+
+const whitelist = [
+  "https://confluo.netlify.com",
+  "https://confluo-api.herokuapp.com/"
+];
+
+if (isDev) {
+  whitelist.push("http://localhost:3000");
+}
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+};
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+app.set("views", path.join(__dirname, "views"));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(cors(corsOptions));
 app.use("/", indexRouter);
 app.use("/", authRouter);
 app.use("/students", studentsRouter);
