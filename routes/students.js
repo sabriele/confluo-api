@@ -82,7 +82,10 @@ router
       return res.status(400).end(`Invalid input syntax for integer: "${id}" `);
 
     try {
-      const foundStudent = await Student.findOne({ where: { id } });
+      const foundStudent = await Student.findOne({
+        where: { id },
+        include: [Schedule, Level]
+      });
       if (!foundStudent)
         return res.status(404).end("This student does not exist");
       return res.status(200).json(foundStudent);
