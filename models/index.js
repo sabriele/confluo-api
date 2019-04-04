@@ -4,7 +4,11 @@ const config = require(__dirname + "/../bin/config.js")[env];
 let sequelize;
 
 if (env === "production") sequelize = new Sequelize(config.url, config.options);
-else {
+else if (env === "test") {
+  sequelize = new Sequelize(process.env.TEST_DATABASE_URL, {
+    dialect: "postgres"
+  });
+} else {
   sequelize = new Sequelize(
     config.database,
     config.username,
