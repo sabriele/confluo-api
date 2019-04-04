@@ -17,6 +17,13 @@ module.exports = {
       logging: false
     }
   },
+  testCI: {
+    url: process.env.TEST_DATABASE_URL,
+    options: {
+      dialect: "postgres",
+      logging: false
+    }
+  },
   production: {
     url: process.env.DATABASE_URL,
     options: {

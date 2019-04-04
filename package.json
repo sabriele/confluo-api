@@ -6,7 +6,8 @@
     "start": "cross-env NODE_ENV=production node ./bin/www",
     "start:dev": "cross-env NODE_ENV=development nodemon ./bin/www",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "test:watch": "cross-env NODE_ENV=test jest --watch --runInBand"
+    "test:watch": "cross-env NODE_ENV=test jest --watch --runInBand",
+    "test:ci": "cross-env NODE_ENV=test jest --watch --runInBand"
   },
   "dependencies": {
     "bcrypt": "^3.0.5",
