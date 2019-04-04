@@ -5,7 +5,7 @@ let sequelize;
 
 if (env === "production") sequelize = new Sequelize(config.url, config.options);
 else if (env === "test") {
-  sequelize = new Sequelize(process.env.TEST_DATABASE_URL, {
+  sequelize = new Sequelize("postgresql://root@localhost/circle_test", {
     dialect: "postgres"
   });
 } else {
