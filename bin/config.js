@@ -18,7 +18,7 @@ module.exports = {
     }
   },
   testCI: {
-    url: process.env.TEST_DATABASE_URL,
+    url: "postgresql://root@localhost/circle_test",
     options: {
       dialect: "postgres",
       logging: false
